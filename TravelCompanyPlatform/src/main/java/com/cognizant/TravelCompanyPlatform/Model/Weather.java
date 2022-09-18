@@ -1,6 +1,7 @@
 package com.cognizant.TravelCompanyPlatform.Model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +13,7 @@ public class Weather {
 	@Id
 	@GeneratedValue (strategy = GenerationType.AUTO)
 	private int id;
-	private LocalDate date;
+	private String date;
 	private float latitude;
 	private float longitude;
 	private String city;
@@ -27,10 +28,12 @@ public class Weather {
 		this.id = id;
 	}
 	public LocalDate getDate() {
-		return date;
+		DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate date_new = LocalDate.parse(date, df);
+		return date_new;
 	}
 	public void setDate(LocalDate date) {
-		this.date = date;
+		this.date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
 	public float getLatitude() {
 		return latitude;
@@ -62,6 +65,4 @@ public class Weather {
 	public void setTemperature(float temperature) {
 		this.temperature = temperature;
 	}
-	
-
 }
