@@ -24,7 +24,7 @@ public class WeatherController {
 	@Autowired
 	WeatherService wService;
 	@PostMapping(value = "/weather")
-	private ResponseEntity<?> WeatherInsert(@RequestBody Map<String, String>body) 
+	private ResponseEntity<?> WeatherInsert(@RequestBody Map<String, String>body)
 	{
 		if (wService.insert(body))
 			return new ResponseEntity<>(HttpStatus.CREATED);

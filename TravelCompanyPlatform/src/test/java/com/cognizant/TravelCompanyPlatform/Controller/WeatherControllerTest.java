@@ -1,7 +1,6 @@
 package com.cognizant.TravelCompanyPlatform.Controller;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -13,12 +12,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -41,8 +42,11 @@ class WeatherControllerTest {
 	Weather weatherTest = new Weather();
 	ObjectMapper omMapper = new ObjectMapper();
 
+	String jsonStr = "";
+	JSONObject jsonObject ;
+
 	@BeforeEach
-	void setup(WebApplicationContext context) {
+	void setup(WebApplicationContext context) throws JSONException {
 		mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
 		DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate date_new = LocalDate.parse("2021-01-06", df);
@@ -52,17 +56,20 @@ class WeatherControllerTest {
 		weatherTest.setLongitude(26.6892f);
 		weatherTest.setCity("Mumbai");
 		weatherTest.setState("MH");
-	}
-
-	@Test
-//	@PrepareForTest(WeatherController.class) // This annotation tells powerMockito to prepare certain classes for testing
-	void weatherInsertTest() throws Exception {
 
 		Gson gson = new Gson();
 		// JsonObject object = gson.;
-		String jsonStr = gson.toJson(weatherTest);
-		JSONObject jsonObject = new JSONObject(jsonStr);
+		jsonStr = gson.toJson(weatherTest);
+		jsonObject = new JSONObject(jsonStr);
 		jsonObject.remove("id");
+	}
+
+	@Test
+//	@Disabled
+//	@PrepareForTest(WeatherController.class) // This annotation tells powerMockito to prepare certain classes for testing
+	void weatherInsertTest() throws Exception {
+
+
 //		System.out.println(jsonObject.toString());
 
 //		json.remove("email");
@@ -70,13 +77,14 @@ class WeatherControllerTest {
 
 		mockMvc.perform(post("/weather").content(jsonObject.toString())
 				.contentType("application/json")).andExpect(status().isCreated());
-		
+
 		mockMvc.perform(post("/weather").content(jsonObject.toString())
 				.contentType("application/json")).andExpect(status().isCreated());
 		
 		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.get("/weather").contentType("application/json")).andExpect(status().isOk());
 		String content = result.andReturn().getResponse().getContentAsString();
-//		System.out.println(content);
+
+
 		JSONArray jsonOb = new JSONArray(content);
 		System.out.println(jsonOb.get(0));
 		System.out.println(jsonOb.get(1));
@@ -85,18 +93,33 @@ class WeatherControllerTest {
 		content = result.andReturn().getResponse().getContentAsString();
 //		System.out.println(content);
 
-	}
-
-	@Test
-	@Disabled
-	void weatherUpdateTest() throws Exception {
-		mockMvc.perform(put("/weather/{id}").contentType("application/json")).andExpect(status().isOk());
-	}
-
-	@Test
-	@Disabled
-	void weatherReportTest() throws Exception {
-		mockMvc.perform(put("/weather/{str}").contentType("application/json")).andExpect(status().isOk()).andDo(MockMvcResultHandlers.print());
 
 	}
+
+//	@Test
+//	@Disabled
+//	void weatheDelete() throws Exception {
+//		mockMvc.perform(post("/weather").content(jsonObject.toString())
+//				.contentType("application/json")).andExpect(status().isCreated());
+//
+//		mockMvc.perform(post("/weather").content(jsonObject.toString())
+//				.contentType("application/json")).andExpect(status().isCreated());
+//
+//		mockMvc.perform(delete("/weather/2")).andExpect(status().isOk());
+//
+//		mockMvc.perform(delete("/weather/2")).andExpect(status().isNotFound());
+//	}
+
+//	@Test
+//	@Disabled
+//	void weatherUpdateTest() throws Exception {
+//		mockMvc.perform(put("/weather/{id}").contentType("application/json")).andExpect(status().isOk());
+//	}
+//
+//	@Test
+//	@Disabled
+//	void weatherReportTest() throws Exception {
+//		mockMvc.perform(put("/weather/{str}").contentType("application/json")).andExpect(status().isOk()).andDo(MockMvcResultHandlers.print());
+//
+//	}
 }
